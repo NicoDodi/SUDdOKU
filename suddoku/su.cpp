@@ -1,5 +1,66 @@
 #include <iostream>
 #include <ncurses.h>
+#include <string>
+
+using namespace std;
+
+
+struct cell {
+    int number;
+    int notes[9];
+
+    cell() {
+        number = 0;
+        for (int i = 0; i < 9; i++) {
+            notes[i] = 0;
+        }
+    }
+};
+
+void print_cell(cell c){
+    printw("%d", c.number);
+    printw("%s", c.notes.c_str());
+}
+
+void print_board(cell** board) {
+    for (int i = 0; i < 9; i++) {
+        if (i % 3 == 0) {
+            printw("+---------+---------+---------+\n");
+        }
+        for (int j = 0; j < 9; j++) {
+            if (j % 3 == 0) {
+                printw("| ");
+            }
+            if (board[i][j].number == 0) {
+                for (int k = 0; k < 9; k++) {
+                    if (board[i][j].notes[k] != 0) {
+                        printw("%d", board[i][j].notes[k]);
+                    } else {
+                        printw(".");
+                    }
+                    if ((k + 1) % 3 == 0) {
+                        printw(" ");
+                    }
+                }
+            } else {
+                printw("  %d  ", board[i][j].number);
+            }
+        }
+        printw("|\n");
+    }
+    printw("+---------+---------+---------+\n");
+}
+
+void Play(){
+    const int size = 9;
+    cell** board = new cell*[size];
+    for (int i = 0; i < size; i++) {
+        board[i] = new cell[size];
+    }
+    print_board(board);
+}
+
+
 
 void Banner() {
     init_pair(1, COLOR_YELLOW, COLOR_BLACK);
@@ -21,10 +82,10 @@ void show_opts(int actual) {
     for (int i = 0; i < num_choices; ++i) {
         if (actual == i + 1) { 
             attron(A_REVERSE); 
-            printw("%s\n", choices[i]);
+            printw("-> %s\n", choices[i]);
             attroff(A_REVERSE); 
         } else {
-            printw("%s\n", choices[i]);
+            printw("  %s\n", choices[i]);
         }
     }
 }
@@ -68,12 +129,13 @@ void Menu() {
     switch (choice) {
         case 1:
             printw("Iniciando el juego...\n");
+            Play();
             break;
         case 2:
             printw("Mostrando la puntuación...\n");
             break;
         case 3:
-            printw("Saliendo...\n");
+            endwin();
             break;
     }
 
@@ -87,13 +149,11 @@ int main() {
     initscr();          
     
     
-    start_color();      // Inicializa colores
-    noecho();           // No muestra la entrada del usuario
-    cbreak();           // Modo de entrada sin buffer
-    curs_set(0);        // Oculta el cursor
-    keypad(stdscr, TRUE); // Habilita las teclas especiales
-    Menu();             // Llama al menú
-    getch();
-    endwin();           // Finaliza ncurses y devuelve la terminal a su estado normal
+    start_color();      
+    noecho();           
+    cbreak();           
+    curs_set(0);        
+    keypad(stdscr, TRUE); 
+    Menu();             
     return 0;
 }
