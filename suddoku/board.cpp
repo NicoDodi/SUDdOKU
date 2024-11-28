@@ -5,6 +5,8 @@
 cell::cell() {
 }
 
+
+
 Board::Board() {
     generate_full_board();  
     int cellsToShow = 26;  
@@ -60,24 +62,40 @@ int generate_random_number(int min, int max) {
 }
 
 void print_cell(cell c) {
-    printw("%d", c.number);
+     if (c.visible) {
+        attron(COLOR_PAIR(4));
+        printw("%d", c.number);
+        attroff(COLOR_PAIR(4)); 
+    } else {
+        printw("_");       
+    }
 }
 
+
 void Board::print_board() {
+    int startx = 2, starty = 1; 
+    move(starty, startx);       
+
     for (int i = 0; i < 9; i++) {
         if (i % 3 == 0) {
-            printw("+---------+---------+---------+\n");
+            mvprintw(starty + i * 2, startx, "+---------+---------+---------+");
         }
+
         for (int j = 0; j < 9; j++) {
             if (j % 3 == 0) {
-                printw("| ");
+                mvprintw(starty + i * 2 + 1, startx + j * 4, "| ");
             }
+            
+            move(starty + i * 2 + 1, startx + j * 4 + 2);
             print_cell(board[i][j]);
-            printw(" ");
         }
-        printw("|\n");
+
+        mvprintw(starty + i * 2 + 1, startx + 37, "|");
     }
-    printw("+---------+---------+---------+\n");
+
+    mvprintw(starty + 18, startx, "+---------+---------+---------+");
+
+    refresh();
 }
 
 bool Board::validate_row(int x) {
@@ -125,3 +143,56 @@ bool Board::validate_board(int x, int y) {
         return true;
     return false;
 }
+
+void Board::make_cells_visible(int cellsToShow) {
+    while (cellsToShow > 0) {
+        int i = generate_random_number(0, 8); // Genera una fila aleatoria
+        int j = generate_random_number(0, 8); // Genera una columna aleatoria
+        if (!board[i][j].visible) {           // Solo afecta celdas no visibles
+            board[i][j].visible = true;       // Marca la celda como visible
+            cellsToShow--;
+        }
+    }
+}
+
+void Board::highlight_cell(cell c){
+    attron(COLOR_PAIR(3));
+    if(c.visible){
+        printw("%d", c.number);
+    }else{
+        printw("%d", "_");
+    }
+    attroff(COLOR_PAIR(3));
+}
+
+void Board::print_board_with_highlight(int highlight_x, int highlight_y) {
+    int startx = 2, starty = 1; 
+    move(starty, startx);      
+
+    for (int i = 0; i < 9; i++) {
+        if (i % 3 == 0) {
+            mvprintw(starty + i * 2, startx, "+---------+---------+---------+");
+        }
+
+        for (int j = 0; j < 9; j++) {
+            if (j % 3 == 0) {
+                mvprintw(starty + i * 2 + 1, startx + j * 4, "| ");
+            }
+            
+            move(starty + i * 2 + 1, startx + j * 4 + 2);
+
+            if (i == highlight_x && j == highlight_y) {
+                highlight_cell(board[i][j]); 
+            } else {
+                print_cell(board[i][j]); 
+            }
+        }
+
+        mvprintw(starty + i * 2 + 1, startx + 37, "|");
+    }
+
+    mvprintw(starty + 18, startx, "+---------+---------+---------+");
+    refresh(); 
+}
+
+

@@ -6,12 +6,8 @@
 
 using namespace std;
 
-//Board board;
+Board board;
 
-void Play(){
-    //board = new Board();
-    
-}
 
 
 
@@ -44,6 +40,64 @@ void show_opts(int actual) {
 }
 
 
+
+
+
+
+void move_cursor(int x, int y){
+    board.print_board_with_highlight(x, y);
+    refresh();
+}
+
+void move(){
+    int col = 0, row = 0;
+    int c;
+    while((c = getch()) != 'q') { 
+        printw("Move with arrow keys");
+        switch (c)
+        {
+        case KEY_UP:
+            if(row > 0){
+                row--;
+                move_cursor(row, col);
+            }
+            break;
+        case KEY_DOWN:
+            if(row < 8){
+                row++;
+                move_cursor(row, col);
+            }
+            break;
+        case KEY_LEFT:
+            if(col > 0){
+                col--;
+                move_cursor(row, col);
+            }
+            break;
+        case KEY_RIGHT:
+            if(col < 8){
+                col++;
+                move_cursor(row, col);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+
+
+
+void Play() {
+    clear(); 
+
+    printw("Sudoku Board:\n");
+    board.print_board();
+    move();
+    printw("\nPress any key to return to the menu...");
+    getch();
+}
 
 
 
@@ -100,14 +154,15 @@ void Menu() {
     getch(); 
 }
 
-
-
-
 int main() {
     initscr();          
     
-    
-    start_color();      
+    board = Board();
+    start_color(); 
+    init_pair(1, COLOR_RED, COLOR_BLACK);   
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_BLACK, COLOR_WHITE);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
     noecho();           
     cbreak();           
     curs_set(0);        
