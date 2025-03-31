@@ -1,1 +1,4 @@
 # SUDdOKU
+
+Required libraries:
+ - ncurses
