@@ -7,13 +7,14 @@ struct cell {
     int number = {0};
     int notes[9] = {0};
     bool visible = {false};
+    bool initial = {false};
     cell();
 };
 
 class Board {
 public:
     cell board[9][9];  
-
+    int emptyCells = 55;
     Board();  
     void print_board();
 
@@ -24,8 +25,9 @@ public:
 
     void generate_full_board();  
     bool fill_number(int i, int j);
-    void print_board_with_highlight(int highlight_x, int highlight_y);
-
+    void highlight_cell(int highlight_x, int highlight_y);
+    void print_option(int x, int y, int opt);
+    void print_cell(int x, int y);
 
 
 private:

@@ -36,8 +36,12 @@ bool Board::fill_board(int row, int col) {
 
     for (int num : numbers) {
         if (is_valid(row, col, num)) {
+            board[row][col].number = num;
             if (fill_board(row, col + 1)) return true;  
-            board[row][col].number = 0; 
+            else
+            {
+                board[row][col].number = 0;
+            }
         }
     }
     return false;  
@@ -61,16 +65,6 @@ int generate_random_number(int min, int max) {
     return dis(gen);
 }
 
-void print_cell(cell c) {
-     if (c.visible) {
-        attron(COLOR_PAIR(4));
-        printw("%d", c.number);
-        attroff(COLOR_PAIR(4)); 
-    } else {
-        printw("_");       
-    }
-}
-
 
 void Board::print_board() {
     int startx = 2, starty = 1; 
@@ -78,7 +72,7 @@ void Board::print_board() {
 
     for (int i = 0; i < 9; i++) {
         if (i % 3 == 0) {
-            mvprintw(starty + i * 2, startx, "+---------+---------+---------+");
+            mvprintw(starty + i * 2, startx, "+------------+------------+------------+");
         }
 
         for (int j = 0; j < 9; j++) {
@@ -87,13 +81,13 @@ void Board::print_board() {
             }
             
             move(starty + i * 2 + 1, startx + j * 4 + 2);
-            print_cell(board[i][j]);
+            print_cell(i, j);
         }
 
         mvprintw(starty + i * 2 + 1, startx + 37, "|");
     }
 
-    mvprintw(starty + 18, startx, "+---------+---------+---------+");
+    mvprintw(starty + 18, startx,"+------------+------------+------------+");
 
     refresh();
 }
@@ -146,53 +140,81 @@ bool Board::validate_board(int x, int y) {
 
 void Board::make_cells_visible(int cellsToShow) {
     while (cellsToShow > 0) {
-        int i = generate_random_number(0, 8); // Genera una fila aleatoria
-        int j = generate_random_number(0, 8); // Genera una columna aleatoria
-        if (!board[i][j].visible) {           // Solo afecta celdas no visibles
-            board[i][j].visible = true;       // Marca la celda como visible
+        int i = generate_random_number(0, 8); 
+        int j = generate_random_number(0, 8); 
+        if (!board[i][j].visible) {           
+            board[i][j].visible = true;  
+            board[i][j].initial = true;
             cellsToShow--;
         }
     }
 }
 
-void Board::highlight_cell(cell c){
+
+
+void Board::highlight_cell(int highlight_x, int highlight_y) {
+    cell &current_cell = board[highlight_x][highlight_y]; 
+    
+    int pos_y = 1 + highlight_x * 2 + 1; 
+    int pos_x = 2 + highlight_y * 4 + 2;  
+
+    
+    move(pos_y, pos_x);
     attron(COLOR_PAIR(3));
-    if(c.visible){
-        printw("%d", c.number);
+    if(current_cell.visible){
+        printw("%d", current_cell.number);
     }else{
-        printw("%d", "_");
+        printw(" _ ");
     }
     attroff(COLOR_PAIR(3));
-}
-
-void Board::print_board_with_highlight(int highlight_x, int highlight_y) {
-    int startx = 2, starty = 1; 
-    move(starty, startx);      
-
-    for (int i = 0; i < 9; i++) {
-        if (i % 3 == 0) {
-            mvprintw(starty + i * 2, startx, "+---------+---------+---------+");
-        }
-
-        for (int j = 0; j < 9; j++) {
-            if (j % 3 == 0) {
-                mvprintw(starty + i * 2 + 1, startx + j * 4, "| ");
-            }
-            
-            move(starty + i * 2 + 1, startx + j * 4 + 2);
-
-            if (i == highlight_x && j == highlight_y) {
-                highlight_cell(board[i][j]); 
-            } else {
-                print_cell(board[i][j]); 
-            }
-        }
-
-        mvprintw(starty + i * 2 + 1, startx + 37, "|");
-    }
-
-    mvprintw(starty + 18, startx, "+---------+---------+---------+");
     refresh(); 
 }
+
+void Board::print_cell(int x, int y) {
+    cell &current_cell = board[x][y]; 
+    
+    int pos_y = 1 + x * 2 + 1; 
+    int pos_x = 2 + y * 4 + 2;  
+
+    
+    move(pos_y, pos_x);
+    if (current_cell.visible) {
+        if(current_cell.initial){
+            attron(COLOR_PAIR(4));
+            printw("%d", current_cell.number);
+            attroff(COLOR_PAIR(4)); 
+        }else{
+            attron(COLOR_PAIR(2));
+            printw("%d", current_cell.number);
+            attroff(COLOR_PAIR(2)); 
+        }
+    } else {
+        printw(" _ ");       
+    }
+    refresh(); 
+}
+
+void Board::print_option(int x, int y, int opt) {
+    cell &current_cell = board[x][y]; 
+    
+    int pos_y = 1 + x * 2 + 1; 
+    int pos_x = 2 + y * 4 + 2;  
+    
+    move(pos_y, pos_x);
+    
+    if (current_cell.number == opt) {
+        current_cell.visible = true;
+        attron(COLOR_PAIR(2)); 
+        printw("%d", opt);
+        attroff(COLOR_PAIR(2));
+    } else {
+        attron(COLOR_PAIR(5)); 
+        printw("%d", opt);
+        attroff(COLOR_PAIR(5));
+    }
+    
+    refresh(); 
+}
+
 
 

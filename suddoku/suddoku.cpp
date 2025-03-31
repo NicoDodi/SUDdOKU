@@ -45,7 +45,7 @@ void show_opts(int actual) {
 
 
 void move_cursor(int x, int y){
-    board.print_board_with_highlight(x, y);
+    board.highlight_cell(x, y);
     refresh();
 }
 
@@ -53,7 +53,7 @@ void move(){
     int col = 0, row = 0;
     int c;
     while((c = getch()) != 'q') { 
-        printw("Move with arrow keys");
+        board.print_cell(row, col);
         switch (c)
         {
         case KEY_UP:
@@ -80,6 +80,10 @@ void move(){
                 move_cursor(row, col);
             }
             break;
+            case '1'...'9':
+                board.print_option(row, col, c - '0'); 
+                 refresh();
+                break;
         default:
             break;
         }
@@ -156,13 +160,13 @@ void Menu() {
 
 int main() {
     initscr();          
-    
     board = Board();
     start_color(); 
     init_pair(1, COLOR_RED, COLOR_BLACK);   
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_BLACK, COLOR_WHITE);
     init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_BLACK, COLOR_RED);
     noecho();           
     cbreak();           
     curs_set(0);        
