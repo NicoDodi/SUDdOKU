@@ -15,20 +15,23 @@ class Board {
 public:
     cell board[9][9];  
     int emptyCells = 55;
+    int tries = 3;
     Board();  
-    void print_board();
-
+    
     bool validate_row(int x);
     bool validate_column(int y);
     bool validate_subgrid(int x, int y);
     bool validate_board(int x, int y);
-
-    void generate_full_board();  
+    
+    void generate_full_board();
+    
+    void print_board();
     bool fill_number(int i, int j);
     void highlight_cell(int highlight_x, int highlight_y);
     void print_option(int x, int y, int opt);
     void print_cell(int x, int y);
 
+    void end_game();
 
 private:
     void highlight_cell(cell c);
@@ -36,6 +39,7 @@ private:
     bool is_valid(int row, int col, int num);  
     void shuffle_numbers(int numbers[]); 
     void make_cells_visible(int n); 
+    void game_over_banner();
 };
 
 int generate_random_number(int min, int max);  

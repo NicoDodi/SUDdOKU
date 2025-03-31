@@ -12,8 +12,7 @@ Board board;
 
 
 void Banner() {
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-    attron(COLOR_PAIR(1)); 
+    attron(COLOR_PAIR(6)); 
     printw(" ____    __  __  ____       __  _____   __  __  __  __     \n");
     printw("/\\  _`\\ /\\ \\/\\ \\/\\  _`\\    /\\ \\/\\  __`\\/\\ \\/\\ \\/\\ \\/\\ \\    \n");
     printw("\\ \\L\\L\\_\\ \\ \\ \\ \\ \\ \\L\\ \\  \\_\\ \\ \\ \\L\\ \\ \\ \\' /\\ \\ \\ \\ \\   \n");
@@ -21,7 +20,7 @@ void Banner() {
     printw("   /\\ \\L\\ \\ \\ \\_\\ \\ \\ \\_\\ /\\ \\L\\ \\ \\ \\_\\ \\ \\ \\` \\\\ \\ \\_\\ \\ \n");
     printw("   \\ `\\____\\ \\_____\\ \\____\\ \\___,_\\ \\_____\\ \\_\\ \\_\\ \\_____\\\n");
     printw("    \\/_____/\\/_____/\\/___/ \\/__,_ /\\/_____/\\/_/\\/_/\\/_____/ \n");
-    attroff(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(6));
 }
 
 void show_opts(int actual) {
@@ -38,10 +37,6 @@ void show_opts(int actual) {
         }
     }
 }
-
-
-
-
 
 
 void move_cursor(int x, int y){
@@ -91,16 +86,43 @@ void move(){
 }
 
 
-
-
 void Play() {
     clear(); 
-
     printw("Sudoku Board:\n");
+
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x); 
+
+    int board_width = max_x / 2; 
+    int info_x = board_width + 2;
+
+    for (int i = 0; i < max_y; i++) {
+        mvprintw(i, board_width, "|");
+    }
+
+    mvprintw(0, board_width / 2 - 3, "Sudoku");
+    mvprintw(0, info_x, "Información");
+
+    mvprintw(2, info_x, "Opciones:");
+    mvprintw(3, info_x, " - Usa flechas para moverte");
+    mvprintw(4, info_x, " - Presiona 'q' para salir");
+    mvprintw(5, info_x, "Quedan: " + board.emptyCells);
+
+
     board.print_board();
     move();
     printw("\nPress any key to return to the menu...");
     getch();
+}
+
+void init_colors(){
+    init_pair(1, COLOR_RED, COLOR_BLACK);   
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_BLACK, COLOR_WHITE);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_BLACK, COLOR_RED);
+    init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+
 }
 
 
@@ -162,15 +184,11 @@ int main() {
     initscr();          
     board = Board();
     start_color(); 
-    init_pair(1, COLOR_RED, COLOR_BLACK);   
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_BLACK, COLOR_WHITE);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
-    init_pair(5, COLOR_BLACK, COLOR_RED);
     noecho();           
     cbreak();           
     curs_set(0);        
     keypad(stdscr, TRUE); 
+    init_colors();
     Menu();             
     return 0;
 }
